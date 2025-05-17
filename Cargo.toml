@@ -2,6 +2,10 @@
 name = "dotl"
 version = "0.1.0"
 edition = "2024"
+license = "MIT"
+description = "A simple CLI todo tracker written in Rust"
+readme = "README.md"
+repository = "https://github.com/smit4k/dotl"
 
 [dependencies]
 clap = { version = "4.4", features = ["derive"] }
