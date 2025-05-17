@@ -12,8 +12,10 @@ A simple CLI todo tracker written in Rust.
 
 ## Installation
 
-Installation instructions coming soon!
-*(You can build from source using `cargo build` or install with `cargo install --path .` for now.)*
+Install the crate
+```bash
+cargo install dotl
+```
 
 ## Usage
 
