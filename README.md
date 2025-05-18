@@ -24,6 +24,10 @@ cargo install dotl
 dotl add "Drink water"
 dotl add "Watch Rust tutorial"
 
+# Mark task as urgent
+dotl add "Finish report" -u
+dotl add "Respond to email" --urgent
+
 # List all tasks
 dotl list
 
