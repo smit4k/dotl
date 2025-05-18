@@ -41,7 +41,10 @@ enum Commands {
     /// Export tasks to a CSV file
     Export {
         file_path: String,
-    }
+    },
+
+    /// Clear all tasks
+    Clear
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -119,6 +122,18 @@ fn main() {
 
             wtr.flush().expect("Failed to flush CSV writer");
             println!("Tasks exported to {}", file_path);
+        }
+
+        Commands::Clear => {
+            println!("Are you sure you want to clear all tasks? (y/n)");
+            let mut input = String::new();
+            io::stdin().read_line(&mut input).expect("Failed to read input");
+            if input.trim().eq_ignore_ascii_case("y") {
+                save_tasks(&Vec::new()).expect("Failed to clear tasks");
+                println!("All tasks cleared!");
+            } else {
+                println!("Clear operation canceled");
+            }
         }
     }
 }
