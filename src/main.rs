@@ -1,5 +1,6 @@
 use clap::{Parser, Subcommand};
 use serde::{Deserialize, Serialize};
+use chrono::NaiveDateTime;
 use std::fs::{self, OpenOptions};
 use std::io::{self, Write};
 use std::path::Path;
@@ -24,6 +25,10 @@ enum Commands {
         // Mark the task as urgent
         #[arg(short, long)]
         urgent: bool,
+
+        // Due date in format YYYY-MM-DD
+        #[arg(short, long)]
+        due: Option<String>,
     },
     /// List all tasks
     List,
@@ -38,20 +43,32 @@ enum Commands {
 struct Task {
     description: String,
     urgent: bool,
+    due_date: Option<NaiveDateTime>,
 }
 
 fn main() {
     let cli = Cli::parse();
 
     match &cli.command {
-        Commands::Add { task , urgent} => {
+        Commands::Add { task , urgent, due} => {
+            let due_date = due.as_ref().and_then(|d| {
+                NaiveDateTime::parse_from_str(d, "%Y-%m-%d %H:%M").ok()
+            });
+
             let mut tasks = load_tasks();
             tasks.push(Task {
                 description: task.to_string(),
                 urgent: *urgent,
+                due_date,
             });
+
             save_tasks(&tasks).expect("Failed to save tasks");
-            println!("Added: {} {}", task, if *urgent { "[URGENT]" } else { "" })
+
+            let due_str = due_date.map_or(String::new(), |d| 
+                format!(" [Due: {}]", d.format("%Y-%m-%d @ %H:%M"))
+            );
+
+            println!("Added: {} {} {}", task, if *urgent { "[URGENT]" } else { "" }, due_str)
         }
         Commands::List => {
             let tasks = load_tasks();
@@ -59,7 +76,12 @@ fn main() {
                 println!("No tasks yet!");
             } else {
                 for (i, task) in tasks.iter().enumerate() {
-                    println!("{}: {} {}", i + 1, task.description, if task.urgent { "[URGENT]" } else { "" });
+
+                    let due_str = task.due_date.map_or(String::new(), |d| 
+                        format!(" [Due: {}]", d.format("%Y-%m-%d @ %H:%M"))
+                    );              
+
+                    println!("{}: {} {}{}", i + 1, task.description, if task.urgent { "[URGENT]" } else { "" }, due_str);
                 }
             }
         }
