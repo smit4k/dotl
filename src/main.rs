@@ -37,6 +37,11 @@ enum Commands {
     Remove {
         index: usize,
     },
+
+    /// Export tasks to a CSV file
+    Export {
+        file_path: String,
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -95,6 +100,25 @@ fn main() {
                 save_tasks(&tasks).expect("Failed to save tasks");
                 println!("Removed {}", removed.description);
             }
+        }
+
+        Commands::Export { file_path } => {
+            let tasks = load_tasks();
+
+            let mut wtr = csv::Writer::from_path(file_path).expect("Failed to create a CSV writer");
+
+            
+            for task in tasks {
+                let due_str = task.due_date.map_or(String::new(), |d| d.format("%Y-%m-%d %H:%M").to_string());
+                wtr.write_record(&[
+                    &task.description,
+                    &task.urgent.to_string(),
+                    &due_str,
+                ]).expect("Failed to write task to CSV");
+            }
+
+            wtr.flush().expect("Failed to flush CSV writer");
+            println!("Tasks exported to {}", file_path);
         }
     }
 }
