@@ -51,7 +51,7 @@ fn main() {
                 urgent: *urgent,
             });
             save_tasks(&tasks).expect("Failed to save tasks");
-            println!("Added: {} {}", task, if *urgent { "(URGENT)" } else { "" })
+            println!("Added: {} {}", task, if *urgent { "[URGENT]" } else { "" })
         }
         Commands::List => {
             let tasks = load_tasks();
@@ -59,7 +59,7 @@ fn main() {
                 println!("No tasks yet!");
             } else {
                 for (i, task) in tasks.iter().enumerate() {
-                    println!("{}: {} {}", i + 1, task.description, if task.urgent { "(URGENT)" } else { "" });
+                    println!("{}: {} {}", i + 1, task.description, if task.urgent { "[URGENT]" } else { "" });
                 }
             }
         }
