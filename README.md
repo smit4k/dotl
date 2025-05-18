@@ -42,6 +42,9 @@ dotl remove 1
 
 # Export your tasks
 dotl export mytasks.csv
+
+# Clear all of your tasks
+dotl clear
 ```
 
 ## Contributing
