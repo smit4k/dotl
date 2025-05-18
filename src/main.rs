@@ -20,6 +20,10 @@ enum Commands {
     Add {
         /// The task description
         task: String,
+
+        // Mark the task as urgent
+        #[arg(short, long)]
+        urgent: bool,
     },
     /// List all tasks
     List,
@@ -33,19 +37,21 @@ enum Commands {
 #[derive(Serialize, Deserialize, Debug)]
 struct Task {
     description: String,
+    urgent: bool,
 }
 
 fn main() {
     let cli = Cli::parse();
 
     match &cli.command {
-        Commands::Add { task } => {
+        Commands::Add { task , urgent} => {
             let mut tasks = load_tasks();
             tasks.push(Task {
                 description: task.to_string(),
+                urgent: *urgent,
             });
             save_tasks(&tasks).expect("Failed to save tasks");
-            println!("Added: {}", task);
+            println!("Added: {} {}", task, if *urgent { "(URGENT)" } else { "" })
         }
         Commands::List => {
             let tasks = load_tasks();
@@ -53,7 +59,7 @@ fn main() {
                 println!("No tasks yet!");
             } else {
                 for (i, task) in tasks.iter().enumerate() {
-                    println!("{}: {}", i + 1, task.description);
+                    println!("{}: {} {}", i + 1, task.description, if task.urgent { "(URGENT)" } else { "" });
                 }
             }
         }
