@@ -38,7 +38,7 @@ enum Commands {
         index: usize,
     },
 
-    /// Export tasks to a CSV file
+    /// Export tasks to a file
     Export {
         file_path: String,
     },
