@@ -3,9 +3,8 @@ use serde::{Deserialize, Serialize};
 use chrono::NaiveDateTime;
 use std::fs::{self, OpenOptions};
 use std::io::{self, Write};
-use std::path::Path;
-
-const TASK_FILE: &str = "dotl_tasks.json";
+use std::path::{PathBuf};
+use xdg::BaseDirectories;
 
 #[derive(Parser)]
 #[command(name = "dotl")]
@@ -26,13 +25,13 @@ enum Commands {
         #[arg(short, long)]
         urgent: bool,
 
-        // Due date in format YYYY-MM-DD
+        // Due date in format YYYY-MM-DD HH:MM
         #[arg(short, long)]
         due: Option<String>,
     },
     /// List all tasks
     List,
-    
+
     /// Remove a task
     Remove {
         index: usize,
@@ -44,7 +43,7 @@ enum Commands {
     },
 
     /// Clear all tasks
-    Clear
+    Clear,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -58,7 +57,7 @@ fn main() {
     let cli = Cli::parse();
 
     match &cli.command {
-        Commands::Add { task , urgent, due} => {
+        Commands::Add { task, urgent, due } => {
             let due_date = due.as_ref().and_then(|d| {
                 NaiveDateTime::parse_from_str(d, "%Y-%m-%d %H:%M").ok()
             });
@@ -72,11 +71,16 @@ fn main() {
 
             save_tasks(&tasks).expect("Failed to save tasks");
 
-            let due_str = due_date.map_or(String::new(), |d| 
+            let due_str = due_date.map_or(String::new(), |d| {
                 format!(" [Due: {}]", d.format("%Y-%m-%d @ %H:%M"))
-            );
+            });
 
-            println!("Added: {} {} {}", task, if *urgent { "[URGENT]" } else { "" }, due_str)
+            println!(
+                "Added: {} {} {}",
+                task,
+                if *urgent { "[URGENT]" } else { "" },
+                due_str
+            );
         }
         Commands::List => {
             let tasks = load_tasks();
@@ -84,12 +88,17 @@ fn main() {
                 println!("No tasks yet!");
             } else {
                 for (i, task) in tasks.iter().enumerate() {
-
-                    let due_str = task.due_date.map_or(String::new(), |d| 
+                    let due_str = task.due_date.map_or(String::new(), |d| {
                         format!(" [Due: {}]", d.format("%Y-%m-%d @ %H:%M"))
-                    );              
+                    });
 
-                    println!("{}: {} {}{}", i + 1, task.description, if task.urgent { "[URGENT]" } else { "" }, due_str);
+                    println!(
+                        "{}: {} {}{}",
+                        i + 1,
+                        task.description,
+                        if task.urgent { "[URGENT]" } else { "" },
+                        due_str
+                    );
                 }
             }
         }
@@ -97,37 +106,37 @@ fn main() {
             let mut tasks = load_tasks();
             if *index == 0 || *index > tasks.len() {
                 println!("Invalid task number");
-            }
-            else {
-                let removed = tasks.remove(index-1);
+            } else {
+                let removed = tasks.remove(index - 1);
                 save_tasks(&tasks).expect("Failed to save tasks");
                 println!("Removed {}", removed.description);
             }
         }
-
         Commands::Export { file_path } => {
             let tasks = load_tasks();
-
             let mut wtr = csv::Writer::from_path(file_path).expect("Failed to create a CSV writer");
 
-            
             for task in tasks {
-                let due_str = task.due_date.map_or(String::new(), |d| d.format("%Y-%m-%d %H:%M").to_string());
+                let due_str = task
+                    .due_date
+                    .map_or(String::new(), |d| d.format("%Y-%m-%d %H:%M").to_string());
                 wtr.write_record(&[
                     &task.description,
                     &task.urgent.to_string(),
                     &due_str,
-                ]).expect("Failed to write task to CSV");
+                ])
+                .expect("Failed to write task to CSV");
             }
 
             wtr.flush().expect("Failed to flush CSV writer");
             println!("Tasks exported to {}", file_path);
         }
-
         Commands::Clear => {
             println!("Are you sure you want to clear all tasks? (y/n)");
             let mut input = String::new();
-            io::stdin().read_line(&mut input).expect("Failed to read input");
+            io::stdin()
+                .read_line(&mut input)
+                .expect("Failed to read input");
             if input.trim().eq_ignore_ascii_case("y") {
                 save_tasks(&Vec::new()).expect("Failed to clear tasks");
                 println!("All tasks cleared!");
@@ -138,22 +147,32 @@ fn main() {
     }
 }
 
+fn get_task_file_path() -> PathBuf {
+    let xdg_dirs = BaseDirectories::with_prefix("dotl").expect("Cannot access XDG directories");
+    xdg_dirs
+        .place_config_file("dotl_tasks.json")
+        .expect("Cannot create config file path")
+}
+
 fn load_tasks() -> Vec<Task> {
-    if !Path::new(TASK_FILE).exists() {
+    let path = get_task_file_path();
+    if !path.exists() {
         return Vec::new();
     }
 
-    let data = fs::read_to_string(TASK_FILE).unwrap_or_else(|_| "[]".to_string());
+    let data = fs::read_to_string(&path).unwrap_or_else(|_| "[]".to_string());
     serde_json::from_str(&data).unwrap_or_else(|_| Vec::new())
 }
 
 fn save_tasks(tasks: &[Task]) -> io::Result<()> {
+    let path = get_task_file_path();
+    fs::create_dir_all(path.parent().unwrap())?;
     let json = serde_json::to_string_pretty(tasks)?;
     let mut file = OpenOptions::new()
         .write(true)
         .create(true)
         .truncate(true)
-        .open(TASK_FILE)?;
+        .open(path)?;
     file.write_all(json.as_bytes())?;
     Ok(())
 }
