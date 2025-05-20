@@ -13,6 +13,7 @@ A simple CLI todo tracker written in Rust.
     * Add a due date
 * View your current list of tasks
 * Remove tasks by their number
+* Backup & Restore your tasks
 * Export your tasks
 * Persistent storage of tasks across directories
 
@@ -45,6 +46,12 @@ dotl remove 1
 
 # Export your tasks
 dotl export mytasks.csv
+
+# Backup your tasks
+dotl backup
+
+# Restore your tasks
+dotl restore ~/.config/dotl/dotl_tasks_backup20250520184030.json
 
 # Clear all of your tasks
 dotl clear
