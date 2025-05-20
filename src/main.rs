@@ -8,7 +8,7 @@ use xdg::BaseDirectories;
 
 #[derive(Parser)]
 #[command(name = "dotl")]
-#[command(about = "Do This Later - a simple CLI todo tracker \nv0.1.4", long_about = None)]
+#[command(about = "Do This Later - a simple CLI todo tracker \nv0.1.5", long_about = None)]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
