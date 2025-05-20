@@ -1,3 +1,6 @@
+![Crates.io Version](https://img.shields.io/crates/v/dotl?style=for-the-badge&labelColor=%23000000)
+![Crates.io Downloads (recent)](https://img.shields.io/crates/dr/dotl?style=for-the-badge&labelColor=%23000000)
+![Crates.io License](https://img.shields.io/crates/l/dotl?style=for-the-badge&labelColor=%23000000)
 
 # dotl — Do This Later
 
