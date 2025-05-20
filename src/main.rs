@@ -44,6 +44,14 @@ enum Commands {
 
     /// Clear all tasks
     Clear,
+
+    /// Backup current list of tasks
+    Backup,
+
+    /// Restore tasks from a backup file
+    Restore {
+        backup_file_path: String,
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -144,6 +152,16 @@ fn main() {
                 println!("Clear operation canceled");
             }
         }
+
+        Commands::Backup => {
+            let backup_path = create_backup().expect("Failed to create backup");
+            println!("Backup created at: {}", backup_path.display());
+        }
+
+        Commands::Restore { backup_file_path } => {
+            restore_from_backup(backup_file_path).expect("Failed to restore from a backup file");
+            println!("Tasks restored from backup: {}", backup_file_path);
+        }
     }
 }
 
@@ -176,3 +194,34 @@ fn save_tasks(tasks: &[Task]) -> io::Result<()> {
     file.write_all(json.as_bytes())?;
     Ok(())
 }
+
+fn create_backup() -> io::Result<PathBuf> {
+    let task_file_path = get_task_file_path();
+    if !task_file_path.exists() {
+        return Err(io::Error::new(
+            io::ErrorKind::NotFound,"Task file does not exist",
+        ));
+    }
+
+    let backup_file_name = format!(
+        "dotl_tasks_backup{}.json", 
+        chrono::Local::now().format("%Y%m%d%H%M%S"));
+
+    let backup_file_path = task_file_path.with_file_name(backup_file_name);
+    fs::copy(&task_file_path, &backup_file_path)?;
+    Ok(backup_file_path)
+}
+
+fn restore_from_backup(backup_file_path: &str) -> io::Result<()> {
+    let backup_path = PathBuf::from(backup_file_path);
+    if !backup_path.exists() {
+        return Err(io::Error::new(
+            io::ErrorKind::NotFound,
+            "Backup file does not exist",
+        ));
+    }
+
+        let task_file_path = get_task_file_path();
+        fs::copy(&backup_path, &task_file_path)?;
+        Ok(())
+    }
