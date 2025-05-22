@@ -14,8 +14,8 @@ A simple CLI todo tracker written in Rust.
 * View your current list of tasks
 * Remove tasks by their number
 * Backup & Restore your tasks
-* Export your tasks
-* Persistent storage of tasks across directories
+* Export your tasks (CSV)
+* Universal storage of tasks across directories
 
 ## Installation
 
