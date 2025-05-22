@@ -9,8 +9,8 @@ A simple CLI todo tracker written in Rust.
 ## Features
 
 * Add tasks quickly from the terminal
-    * Mark as urgent
-    * Add a due date
+  * Mark as urgent
+  * Add a due date
 * View your current list of tasks
 * Remove tasks by their number
 * Backup & Restore your tasks
@@ -20,6 +20,7 @@ A simple CLI todo tracker written in Rust.
 ## Installation
 
 Install the crate
+
 ```bash
 cargo install dotl
 ```
