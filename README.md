@@ -37,7 +37,8 @@ dotl add "Finish report" -u
 dotl add "Respond to email" --urgent
 
 # Add a due date
-dotl add "Submit assignment" --due "2025-5-18 15:30"
+dotl add "Submit assignment" -d "2025-5-18 15:30"
+dotl add "Clean up room" --due "2025-5-25 13:45"
 
 # List all tasks
 dotl list
