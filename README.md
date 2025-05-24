@@ -4,7 +4,7 @@
 
 # dotl — Do This Later
 
-A simple CLI todo tracker written in Rust.
+A fast and simple CLI todo tracker written in Rust.
 
 ## Features
 
