@@ -53,7 +53,7 @@ dotl export mytasks.csv
 dotl backup
 
 # Restore your tasks
-dotl restore ~/.config/dotl/dotl_tasks_backup20250520184030.json
+dotl restore ~/.config/dotl/backups/dotl_tasks_backup20250523220755.json
 
 # Clear all of your tasks
 dotl clear
