@@ -196,18 +196,27 @@ fn save_tasks(tasks: &[Task]) -> io::Result<()> {
 }
 
 fn create_backup() -> io::Result<PathBuf> {
+    let xdg_dirs = BaseDirectories::with_prefix("dotl").expect("Cannot access XDG directories");
+    let backups_dir = xdg_dirs
+        .place_config_file("backups")
+        .expect("Cannot create backups directory");
+
+    fs::create_dir_all(&backups_dir)?;
+
     let task_file_path = get_task_file_path();
     if !task_file_path.exists() {
         return Err(io::Error::new(
-            io::ErrorKind::NotFound,"Task file does not exist",
+            io::ErrorKind::NotFound,
+            "Task file does not exist",
         ));
     }
 
     let backup_file_name = format!(
-        "dotl_tasks_backup{}.json", 
-        chrono::Local::now().format("%Y%m%d%H%M%S"));
+        "dotl_tasks_backup{}.json",
+        chrono::Local::now().format("%Y%m%d%H%M%S")
+    );
 
-    let backup_file_path = task_file_path.with_file_name(backup_file_name);
+    let backup_file_path = backups_dir.join(backup_file_name);
     fs::copy(&task_file_path, &backup_file_path)?;
     Ok(backup_file_path)
 }
