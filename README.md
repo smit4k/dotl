@@ -62,5 +62,4 @@ dotl clear
 
 ## Contributing
 
-Contributions are welcome! Please feel free to open issues for bugs or feature requests,
-or submit pull requests to improve the project.
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) before contributing
