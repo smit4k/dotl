@@ -9,7 +9,7 @@ use colored::*;
 
 #[derive(Parser)]
 #[command(name = "dotl")]
-#[command(about = "Do This Later - a fast and simple CLI todo tracker \nv0.1.7", long_about = None)]
+#[command(about = "Do This Later - a fast and simple CLI todo tracker \nv0.1.8", long_about = None)]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
