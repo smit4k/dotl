@@ -141,7 +141,7 @@ fn main() {
             println!("Tasks exported to {}", file_path);
         }
         Commands::Clear => {
-            println!("Are you sure you want to clear all tasks? (y/n)");
+            println!("{}", "Are you sure you want to clear all tasks? (y/n)".yellow().bold());
             let mut input = String::new();
             io::stdin()
                 .read_line(&mut input)
