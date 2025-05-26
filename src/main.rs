@@ -5,6 +5,7 @@ use std::fs::{self, OpenOptions};
 use std::io::{self, Write};
 use std::path::{PathBuf};
 use xdg::BaseDirectories;
+use colored::*;
 
 #[derive(Parser)]
 #[command(name = "dotl")]
@@ -86,7 +87,7 @@ fn main() {
             println!(
                 "Added: {} {} {}",
                 task,
-                if *urgent { "[URGENT]" } else { "" },
+                if *urgent { "[URGENT]".red().to_string() } else { "".to_string() },
                 due_str
             );
         }
@@ -104,7 +105,7 @@ fn main() {
                         "{}: {} {}{}",
                         i + 1,
                         task.description,
-                        if task.urgent { "[URGENT]" } else { "" },
+                        if task.urgent { "[URGENT]".red().to_string() } else { "".to_string() },
                         due_str
                     );
                 }
