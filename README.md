@@ -16,6 +16,7 @@ A fast and simple CLI todo tracker written in Rust.
 * Backup & Restore your tasks
 * Export your tasks (CSV)
 * Universal storage of tasks across directories
+* Colored terminal outputs
 
 ## Installation
 
